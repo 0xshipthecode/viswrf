@@ -25,20 +25,21 @@ if __name__ == '__main__':
     print('Error: invalid timestamp %s' % tstr)
     sys.exit(2)
 
+  # extract variables
   tndx = times.index(tstr)
   fa = d.variables[varname][tndx,:,:]
   lon = d.variables['FXLONG'][0,:,:]
   lat = d.variables['FXLAT'][0,:,:]
 
-  c = plt.contour(lon, lat, fa, [0]).collections[0]
-  paths = c.get_paths()
-
+  # add each polygon to the KML document
   doc = kml.Kml(name = tstr)
   style = kml.Style()
   style.linestyle.color = kml.Color.red
   style.linestyle.width = 3
   style.polystyle.outline = 1
   style.polystyle.fill = 0
+  c = plt.contour(lon, lat, fa, [0]).collections[0]
+  paths = c.get_paths()
   polys = []
   for path in paths:
     if len(path) > 5:
@@ -47,6 +48,7 @@ if __name__ == '__main__':
       poly.style = style
       polys.append(poly)
 
+  # compress or not according to file extension
   if outf.endswith('kmz'):
     doc.savekmz(outf)
   else:
