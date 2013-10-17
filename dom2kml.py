@@ -34,15 +34,16 @@ if __name__ == '__main__':
     # read in CLONG & CLAT
     lon = d.variables['CLONG'][0,:,:]
     lat = d.variables['CLAT'][0,:,:]
+    shape = lon.shape
 
     # construct a poly that shows the domain
     dom = doc.newpolygon(name = geoname)
 
     bdry = []
-    bdry.extend([(lon[0,i], lat[0,i]) for i in range(lon.shape[1])])
-    bdry.extend([(lon[j,-1], lat[j,-1]) for j in range(lon.shape[0])])
-    bdry.extend([(lon[-1,i], lat[-1,i]) for i in range(lon.shape[1]-1,0,-1)])
-    bdry.extend([(lon[j,0], lat[j,0]) for j in range(lon.shape[0]-1,0,-1)])
+    bdry.extend([(lon[0,i], lat[0,i]) for i in range(shape[1])])
+    bdry.extend([(lon[j,-1], lat[j,-1]) for j in range(shape[0])])
+    bdry.extend([(lon[-1,i], lat[-1,i]) for i in range(shape[1]-1,-1,-1)])
+    bdry.extend([(lon[j,0], lat[j,0]) for j in range(shape[0]-1,-1,-1)])
 
     dom.outerboundaryis = bdry
     dom.style = style
