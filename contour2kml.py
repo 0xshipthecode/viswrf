@@ -42,7 +42,7 @@ if __name__ == '__main__':
   paths = c.get_paths()
   polys = []
   for path in paths:
-    if len(path) > 5:
+    if len(path) > 3:
       poly = doc.newpolygon()
       poly.outerboundaryis = [(x,y) for x,y in path.to_polygons()[0]]
       poly.style = style
