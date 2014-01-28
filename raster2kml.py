@@ -69,7 +69,7 @@ def basemap_raster_mercator(lon, lat, grid):
   plt.axis('off')
   cmap = mpl.cm.jet
   cmap.set_bad('w', 1.0)
-  m.pcolor(lon,lat,masked_grid,latlon=True,cmap=cmap,vmin=vmin,vmax=vmax)
+  m.pcolormesh(lon,lat,masked_grid,latlon=True,cmap=cmap,vmin=vmin,vmax=vmax)
 
   str_io = StringIO.StringIO()
   plt.savefig(str_io,bbox_inches='tight',format='png',pad_inches=0,transparent=True)
