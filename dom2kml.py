@@ -9,7 +9,7 @@ import sys
 if __name__ == '__main__':
 
   if len(sys.argv) < 4:
-    print('Usage: %s <kml_name> <out_file> <geo_em_file> [<geo_em_file>*]' % sys.argv[0])
+    print('Usage: %s <kml_layer_name> <kml_file_name> <geo_em_file> [<geo_em_file>*]' % sys.argv[0])
     sys.exit(1)
 
   # read in input names
