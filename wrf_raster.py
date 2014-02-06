@@ -51,13 +51,14 @@ def make_colorbar(rng,orientation,size_in,cmap,cb_label,cb_title,dpi=200):
 
 
 def basemap_raster_mercator(lon, lat, grid):
+
   # longitude/latitude extent
   lons = (np.amin(lon), np.amax(lon))
   lats = (np.amin(lat), np.amax(lat))
 
   # construct spherical mercator projection for region of interest
   m = Basemap(projection='merc',llcrnrlat=lats[0], urcrnrlat=lats[1],
-              llcrnrlon=lons[0],urcrnrlon=lons[1],lat_ts=48)
+              llcrnrlon=lons[0],urcrnrlon=lons[1])
 
   vmin,vmax = np.nanmin(grid),np.nanmax(grid)
   masked_grid = np.ma.array(grid,mask=np.isnan(grid))
@@ -69,8 +70,8 @@ def basemap_raster_mercator(lon, lat, grid):
 
   str_io = StringIO.StringIO()
   plt.savefig(str_io,bbox_inches='tight',format='png',pad_inches=0,transparent=True)
-  kml_bounds = [ (lons[0],lats[0]),(lons[1],lats[0]),(lons[1],lats[1]),(lons[0],lats[1]) ]
+  bounds = [ (lons[0],lats[0]),(lons[1],lats[0]),(lons[1],lats[1]),(lons[0],lats[1]) ]
 
-  return str_io.getvalue(), kml_bounds
+  return str_io.getvalue(), bounds
 
 

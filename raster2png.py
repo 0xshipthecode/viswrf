@@ -51,6 +51,7 @@ if __name__ == "__main__":
         with open(cb_file, 'w') as f:
             f.write(cb_png_data)
 
+    print("[raster2kml] raster range [%g, %g], mean %g" % (np.amin(fa),np.amax(fa),np.mean(fa)))
     print("[raster2png] creating raster from grid (Spherical Mercator) and saving to %s ..." % outf)
     raster_png_data,corner_coords = basemap_raster_mercator(lon,lat,fa)
     with open(outf,'w') as f:

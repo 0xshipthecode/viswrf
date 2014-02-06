@@ -56,6 +56,7 @@ if __name__ == "__main__":
     cbo.visibility = 1
     cbo.icon.href="colorbar.png"
 
+    print("[raster2kml] raster range [%g, %g], mean %g" % (np.amin(fa),np.amax(fa),np.mean(fa)))
     print("[raster2kml] rendering raster from variable %s (Mercator projection) ..." % varname)
     ground = doc.newgroundoverlay(name=varname,color="80ffffff")
     raster_png_data,corner_coords = basemap_raster_mercator(lon,lat,fa)
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     doc.savekmz(outf)
 
     # cleanup
-    print("[raster2kml] cleanup of temp files ...")
+    print("[raster2kml] cleaning up temp files ...")
     os.remove('colorbar.png')
     os.remove('raster.png')
 
