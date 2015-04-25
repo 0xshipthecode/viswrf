@@ -17,15 +17,17 @@ from wrf_raster import make_colorbar, basemap_raster_mercator
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 5:
-        print('Usage: %s <wrfout-file> <varname> <esmf-time> <target-file>' % sys.argv[0])
+    if len(sys.argv) != 6:
+        print('Usage: %s <wrfout-file> <varname> <dom-id> <esmf-time> <out-path>' % sys.argv[0])
         sys.exit(1)
 
     # open the netCDF dataset
     d = nc4.Dataset(sys.argv[1])
     varname = sys.argv[2]
-    tstr = sys.argv[3]
-    outf = sys.argv[4]
+    dom_id = int(sys.argv[3])
+    tstr = sys.argv[4]
+    out_path = sys.argv[5]
+    base_name = varname + ('-%02d-' % dom_id) + tstr
 
     # extract ESMF string times
     times = [''.join(x) for x in d.variables['Times'][:]]
@@ -49,44 +51,56 @@ if __name__ == "__main__":
 
     # construct kml file
     doc = kml.Kml(name = varname)
-    fa_min,fa_max = np.nanmin(fa),np.nanmax(fa)
 
-    # render first colorbar required by wisdom
-    wisdom = get_wisdom(var_name)
+    # gather wisdom about the variable
+    wisdom = get_wisdom(varname)
     native_unit = wisdom['native_unit']
-    cb_unit = wisdom['colorbar_units'][0]
-    print('[raster2kml] wisdom for var %s: native_unit %s main colobar unit %s' % (var_name, native_unit, cb_unit))
-
     cmap_name = wisdom['colormap']
+    cmap = mpl.cm.get_cmap(cmap_name)
+    cb_unit = wisdom['colorbar_units'][0]
+
+    # look at mins and maxes
+    fa_min,fa_max = np.nanmin(fa),np.nanmax(fa)
+    print('[raster2kml] variable range [%g, %g], mean %g in %s' % (fa_min, fa_max, np.nanmean(fa), native_unit))
+
+    # determine if we will use the range in the variable or a fixed range
+    scale = wisdom['scale']
+    if scale == 'original':
+        print('[raster2kml] using original range [%g - %g] %s' % (fa_min, fa_max, native_unit))
+    else:
+        fa_min, fa_max = scale[0], scale[1]
+        fa[fa < fa_min] = fa_min
+        fa[fa > fa_max] = fa_max
+        print('[raster2kml] enforcing range as [%g - %g] %s' % (fa_min, fa_max, native_unit))
+
+    cbu_min,cbu_max = convert_value(native_unit, cb_unit, fa_min), convert_value(native_unit, cb_unit, fa_max)
+
     print('[raster2kml] rendering colorbar with unit %s and colormap %s...' % (cb_unit, cmap_name))
-    cbu_min, cbu_max = convert_value(native_unit, cb_unit, fa_min), convert_value(native_unit, cb_unit, fa_max)
-    cb_png_data = make_colorbar([cbu_min, cbu_max],'vertical',2,mpl.get_cmap(cmap_name),cb_unit,varname)
-    suffix = var_name + '-' + tstr
-    cb_name = 'colorbar-' + suffix + '.png'
+    cb_png_data = make_colorbar([cbu_min, cbu_max],'vertical',2,cmap,cb_unit,varname)
+    cb_name = 'colorbar-' + base_name + '.png'
     with open(cb_name, 'w') as f:
         f.write(cb_png_data)
     doc.addfile(cb_name)
 
     cbo = doc.newscreenoverlay(name='colorbar')
     cbo.overlayxy = kml.OverlayXY(x=0,y=1,xunits=kml.Units.fraction,yunits=kml.Units.fraction)
-    cbo.screenxy = kml.ScreenXY(x=0.02,y=0.98,xunits=kml.Units.fraction,yunits=kml.Units.fraction)
-    cbo.size = kml.Size(x=0,y=0,xunits=kml.Units.fraction,yunits=kml.Units.fraction)
+    cbo.screenxy = kml.ScreenXY(x=0.02,y=0.95,xunits=kml.Units.fraction,yunits=kml.Units.fraction)
+    cbo.size = kml.Size(x=150,y=300,xunits=kml.Units.pixel,yunits=kml.Units.pixel)
     cbo.color = kml.Color.rgb(255,255,255,a=150)
     cbo.visibility = 1
     cbo.icon.href=cb_name
 
-    print('[raster2kml] raster range [%g, %g], mean %g' % (np.amin(fa),np.amax(fa),np.mean(fa)))
     print('[raster2kml] rendering raster from variable %s (Mercator projection) ...' % varname)
     ground = doc.newgroundoverlay(name=varname,color='80ffffff')
-    raster_png_data,corner_coords = basemap_raster_mercator(lon,lat,fa)
-    raster_name = 'raster-' + suffix + '.png'
+    raster_png_data,corner_coords = basemap_raster_mercator(lon,lat,fa,fa_min,fa_max,cmap)
+    raster_name = 'raster-' + base_name + '.png'
     with open(raster_name,'w') as f:
       f.write(raster_png_data)
     doc.addfile(raster_name)
     ground.icon.href = raster_name
     ground.gxlatlonquad.coords = corner_coords
 
-    doc.savekmz(outf)
+    doc.savekmz(os.path.join(out_path, base_name + ".kmz"))
 
     # cleanup
     print("[raster2kml] cleaning up temp files ...")

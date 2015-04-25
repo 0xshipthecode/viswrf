@@ -50,7 +50,7 @@ def make_colorbar(rng,orientation,size_in,cmap,cb_label,cb_title,dpi=200):
     return str_io.getvalue()
 
 
-def basemap_raster_mercator(lon, lat, grid):
+def basemap_raster_mercator(lon, lat, grid, cmin, cmax, cmap_name):
 
   # longitude/latitude extent
   lons = (np.amin(lon), np.amax(lon))
@@ -60,13 +60,12 @@ def basemap_raster_mercator(lon, lat, grid):
   m = Basemap(projection='merc',llcrnrlat=lats[0], urcrnrlat=lats[1],
               llcrnrlon=lons[0],urcrnrlon=lons[1])
 
-  vmin,vmax = np.nanmin(grid),np.nanmax(grid)
+  #vmin,vmax = np.nanmin(grid),np.nanmax(grid)
   masked_grid = np.ma.array(grid,mask=np.isnan(grid))
-  fig = plt.figure(frameon=False)
+  fig = plt.figure(frameon=False,figsize=(12,8),dpi=72)
   plt.axis('off')
-  cmap = mpl.cm.jet
-  cmap.set_bad('w', 1.0)
-  m.pcolormesh(lon,lat,masked_grid,latlon=True,cmap=cmap,vmin=vmin,vmax=vmax)
+  cmap = mpl.cm.get_cmap(cmap_name)
+  m.pcolormesh(lon,lat,masked_grid,latlon=True,cmap=cmap,vmin=cmin,vmax=cmax)
 
   str_io = StringIO.StringIO()
   plt.savefig(str_io,bbox_inches='tight',format='png',pad_inches=0,transparent=True)

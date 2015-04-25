@@ -2,6 +2,7 @@
 
 import netCDF4 as nc4
 import sys
+import os
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -10,14 +11,15 @@ import simplekml as kml
 
 if __name__ == '__main__':
   
-  if len(sys.argv) != 5:
-    print('Usage: %s <wrfout-file> <varname> <esmf-time> <target-file>' % sys.argv[0])
+  if len(sys.argv) != 6:
+    print('Usage: %s <wrfout-file> <varname> <dom-id> <esmf-time> <out-path>' % sys.argv[0])
     sys.exit(1)
 
   d = nc4.Dataset(sys.argv[1])
   varname = sys.argv[2]
-  tstr = sys.argv[3]
-  outf = sys.argv[4]
+  dom_id = int(sys.argv[3])
+  tstr = sys.argv[4]
+  out_path = sys.argv[5]
 
   # extract ESMF string times
   times = [''.join(x) for x in d.variables['Times'][:]]
@@ -48,9 +50,6 @@ if __name__ == '__main__':
       poly.style = style
       polys.append(poly)
 
-  # compress or not according to file extension
-  if outf.endswith('kmz'):
-    doc.savekmz(outf)
-  else:
-    doc.save(outf)
+  # always store as kmz
+  doc.savekmz(os.path.join(out_path, "%s-%02-%s.kmz" % (varname,dom_id,tstr)))
 
