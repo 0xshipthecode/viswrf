@@ -1,47 +1,92 @@
 
-
 _var_wisdom = {
     'T2' : {
+        'name' : 'temperature at 2m',
         'native_unit' : 'K',
         'colorbar_units' : ['C', 'F'],
         'colormap' : 'jet',
-        'scale' : 'original'
+        'scale' : 'original',
+        'retrieve_as' : lambda d,t: d.variables['T2'][t,:,:]
       },
     'RH_FIRE' : {
+        'name' : 'relative humidity',
         'native_unit' : '-',
         'colorbar_units' : ['-'],
         'colormap' : 'jet_r',
-        'scale' : [0.0, 1.5]
+        'scale' : [0.0, 1.0],
+        'retrieve_as' : lambda d,t: d.variables['RH_FIRE'][t,:,:]
       },
     'F_ROS' : {
+       'name' : 'fire spread rate',
        'native_unit' : 'm/s',
        'colorbar_units' : ['m/s', 'ft/s'],
        'colormap' : 'jet',
        'scale' : [0.0, 2.0],
+       'retrieve_as' : lambda d,t: d.variables['F_ROS'][t,:,:]
       },
     'F_INT' : {
+       'name' : 'fireline intensity',
        'native_unit' : 'J/m/s^2',
        'colorbar_units' : ['J/m/s^2'],
        'colormap' : 'jet',
-       'scale' : 'original'
+       'scale' : 'original',
+       'retrieve_as' : lambda d,t: d.variables['F_INT'][t,:,:]
     },
     'NFUEL_CAT' : {
+       'name' : 'fuel categories',
        'native_unit' : 'fuel_type',
        'colorbar_units' : ['fuel_type'],
        'colormap' : 'jet',
-       'scale' : 'original'
+       'scale' : 'original',
+       'retrieve_as' : lambda d,t: d.variables['NFUEL_CAT'][t,:,:]
     },
     'ZSF' : {
+       'name' : 'terrain height',
        'native_unit' : 'm',
        'colorbar_units' : ['m','ft'],
        'colormap' : 'jet',
-       'scale' : 'original'
+       'scale' : 'original',
+       'retrieve_as' : lambda d,t: d.variables['ZSF'][t,:,:]
     },
     'FMC_G' : {
+       'name' : 'fuel moisture',
        'native_unit' : '-',
        'colorbar_units' : ['-'],
        'colormap' : 'jet_r',
-       'scale' : [0.0, 1.5]
+       'scale' : [0.0, 0.5],
+       'retrieve_as' : lambda d,t: d.variables['FMC_G'][t,:,:]
+    },
+    '1HR_FM' : {
+       'name' : '1-HR fuel moisture',
+       'native_unit' : '-',
+       'colorbar_units' : ['-'],
+       'colormap' : 'jet_r',
+       'scale' : [0.0, 1.0],
+       'retrieve_as' : lambda d,t: d.variables['FMC_GC'][t,0,:,:]
+    },
+    '10HR_FM' : {
+       'name' : '10-HR fuel moisture',
+       'native_unit' : '-',
+       'colorbar_units' : ['-'],
+       'colormap' : 'jet_r',
+       'scale' : [0.0, 1.0],
+       'retrieve_as' : lambda d,t: d.variables['FMC_GC'][t,1,:,:]
+    },
+    '100HR_FM' : {
+       'name' : '100-HR fuel moisture',
+       'native_unit' : '-',
+       'colorbar_units' : ['-'],
+       'colormap' : 'jet_r',
+       'scale' : [0.0, 1.0],
+       'retrieve_as' : lambda d,t: d.variables['FMC_GC'][t,2,:,:]
+    },
+    'FMC_EQUI' : {
+       'name' : 'fuel moisture equilibrium',
+       'native_unit' : '-',
+       'colorbar_units' : ['-'],
+       'colormap' : 'jet_r',
+       'scale' : [0.0, 1.0],
+       'retrieve_as' : lambda d,t: d.variables['FMC_EQUI'][t,0,:,:]
     }
 }
 
@@ -78,9 +123,4 @@ def convert_value(unit_from, unit_to, value):
     else:
         return func(value)
 
-
-
-        
-
-    
 
