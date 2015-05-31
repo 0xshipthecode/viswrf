@@ -10,8 +10,8 @@ import netCDF4 as nc4
 import sys
 import os
 import StringIO
-from var_wisdom import convert_value, get_wisdom
 
+from var_wisdom import convert_value, get_wisdom
 from wrf_raster import make_colorbar, basemap_raster_mercator
 
 
@@ -29,6 +29,8 @@ if __name__ == "__main__":
     out_path = sys.argv[5]
     base_name = varname + ('-%02d-' % dom_id) + tstr
 
+    vw = get_wisdom(varname)
+
     # extract ESMF string times
     times = [''.join(x) for x in d.variables['Times'][:]]
     if tstr not in times:
@@ -37,7 +39,7 @@ if __name__ == "__main__":
 
     # extract variables
     tndx = times.index(tstr)
-    fa = d.variables[varname][tndx,:,:]
+    fa = vw['retrieve_as'](d,tndx) # this calls a lambda defined to read the required 2d field
     lon = d.variables['XLONG'][0,:,:]
     lat = d.variables['XLAT'][0,:,:]
     if lat.shape != fa.shape:
@@ -75,8 +77,9 @@ if __name__ == "__main__":
 
     cbu_min,cbu_max = convert_value(native_unit, cb_unit, fa_min), convert_value(native_unit, cb_unit, fa_max)
 
+    # 
     print('[raster2kml] rendering colorbar with unit %s and colormap %s...' % (cb_unit, cmap_name))
-    cb_png_data = make_colorbar([cbu_min, cbu_max],'vertical',2,cmap,cb_unit,varname)
+    cb_png_data = make_colorbar([cbu_min, cbu_max],'vertical',2,cmap,vw['name'] + ' ' + cb_unit,varname)
     cb_name = 'colorbar-' + base_name + '.png'
     with open(cb_name, 'w') as f:
         f.write(cb_png_data)

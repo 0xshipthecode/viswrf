@@ -15,7 +15,7 @@ def make_colorbar(rng,orientation,size_in,cmap,cb_label,cb_title,dpi=200):
     orientation - 'vertical' or 'horizontal'
     size_in - larger dimension (height for vertical orientation, width for horizontal)
     cmap - the colormap in use
-    units - the colorbar label
+    units - the colorbar label (on left side vertically)
     dpi - dots per inch
 
     See: http://matplotlib.org/examples/api/colorbar_only.html for more examples
@@ -34,7 +34,6 @@ def make_colorbar(rng,orientation,size_in,cmap,cb_label,cb_title,dpi=200):
 
     # construct the colorbar and modify properties
     cb = mpl.colorbar.ColorbarBase(ax,**kwargs)
-    ax.set_title(cb_title,color='1',fontsize=10)
     cb.set_label(cb_label,color='1',fontsize=8,labelpad=-40)
 
     # move ticks to left side

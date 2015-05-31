@@ -72,7 +72,7 @@ if __name__ == "__main__":
         cb_path = os.path.join(out_path, ('%s-%02d-%s-' % (varname,dom_id,tstr)) + cb_unit.replace('/','_') + "-cb.png")
         print("[raster2png] rendering colorbar for unit %s as [%s] ..." % (cb_unit, cb_path))
         cbu_min, cbu_max = convert_value(native_unit, cb_unit, fa_min), convert_value(native_unit, cb_unit, fa_max)
-        cb_png_data = make_colorbar([cbu_min,cbu_max],'vertical',2,cmap,cb_unit,varname)
+        cb_png_data = make_colorbar([cbu_min,cbu_max],'vertical',2,cmap,vw['name'] + ' ' + cb_unit,varname)
         with open(cb_path, 'w') as f:
             f.write(cb_png_data)
 

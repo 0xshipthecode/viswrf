@@ -8,7 +8,6 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import simplekml as kml
 
-
 if __name__ == '__main__':
   
   if len(sys.argv) != 6:
@@ -20,6 +19,8 @@ if __name__ == '__main__':
   dom_id = int(sys.argv[3])
   tstr = sys.argv[4]
   out_path = sys.argv[5]
+  base_name = varname + ('-%02d-' % dom_id) + tstr
+
 
   # extract ESMF string times
   times = [''.join(x) for x in d.variables['Times'][:]]
@@ -29,7 +30,7 @@ if __name__ == '__main__':
 
   # extract variables
   tndx = times.index(tstr)
-  fa = d.variables[varname][tndx,:,:]
+  fa = d.variables[varname][0,:,:]
   lon = d.variables['FXLONG'][0,:,:]
   lat = d.variables['FXLAT'][0,:,:]
 
@@ -51,5 +52,5 @@ if __name__ == '__main__':
       polys.append(poly)
 
   # always store as kmz
-  doc.savekmz(os.path.join(out_path, "%s-%02-%s.kmz" % (varname,dom_id,tstr)))
+  doc.savekmz(os.path.join(out_path, base_name + '.kmz'))
 
