@@ -30,7 +30,13 @@ if __name__ == "__main__":
     times = [''.join(x) for x in d.variables['Times'][:]]
     if tstr not in times:
         print('Error: invalid timestamp %s' % tstr)
+        print('File contains timestamps: %s' % times)
         sys.exit(2)
+
+    if varname not in d.variables:
+        print('Error: variable %s not found.' % varname)
+        print('File contains the following variables: %s' % sorted(d.variables.keys()))
+        sys.exit(3)
 
     # extract variables
     tndx = times.index(tstr)
@@ -72,7 +78,7 @@ if __name__ == "__main__":
         cb_path = os.path.join(out_path, ('%s-%02d-%s-' % (varname,dom_id,tstr)) + cb_unit.replace('/','_') + "-cb.png")
         print("[raster2png] rendering colorbar for unit %s as [%s] ..." % (cb_unit, cb_path))
         cbu_min, cbu_max = convert_value(native_unit, cb_unit, fa_min), convert_value(native_unit, cb_unit, fa_max)
-        cb_png_data = make_colorbar([cbu_min,cbu_max],'vertical',2,cmap,vw['name'] + ' ' + cb_unit,varname)
+        cb_png_data = make_colorbar([cbu_min,cbu_max],'vertical',2,cmap,wisdom['name'] + ' ' + cb_unit,varname)
         with open(cb_path, 'w') as f:
             f.write(cb_png_data)
 
