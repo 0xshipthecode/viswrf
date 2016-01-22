@@ -16,6 +16,14 @@ _var_wisdom = {
         'scale' : [0.0, 1.0],
         'retrieve_as' : lambda d,t: d.variables['RH_FIRE'][t,:,:]
       },
+     'FIRE_HFX' : {
+        'name' : 'fire heat flux',
+        'native_unit' : 'W/m^2',
+        'colorbar_units' : ['W/m^2'],
+        'colormap' : 'jet',
+        'scale' : 'original',
+        'retrieve_as' : lambda d,t: d.variables['FIRE_HFX'][t,:,:]
+      },
     'F_ROS' : {
        'name' : 'fire spread rate',
        'native_unit' : 'm/s',
